@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICMS_Reader", "ICMS_Reader.csproj", "{7075BFC1-04F2-456C-849E-B39AEAED1188}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7075BFC1-04F2-456C-849E-B39AEAED1188}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7075BFC1-04F2-456C-849E-B39AEAED1188}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7075BFC1-04F2-456C-849E-B39AEAED1188}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7075BFC1-04F2-456C-849E-B39AEAED1188}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEFA591F-3964-4DE6-AB98-DD51769C992B}
+	EndGlobalSection
+EndGlobal
