@@ -117,6 +117,4 @@ namespace ICMS_Reader
         }
 
     }
-
-
 }

@@ -50,11 +50,12 @@
             this.tcTab = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.lbGrades = new System.Windows.Forms.ListBox();
+            this.cbDistinct = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.lvFiltered = new System.Windows.Forms.ListView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.cbRuecktritt = new System.Windows.Forms.CheckBox();
+            this.lvAll = new System.Windows.Forms.ListView();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -63,11 +64,12 @@
             this.tabPage2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGo
             // 
-            this.btnGo.Location = new System.Drawing.Point(6, 414);
+            this.btnGo.Location = new System.Drawing.Point(809, 614);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(75, 23);
             this.btnGo.TabIndex = 0;
@@ -149,15 +151,15 @@
             // 
             // pbProgress
             // 
-            this.pbProgress.Location = new System.Drawing.Point(3, 385);
+            this.pbProgress.Location = new System.Drawing.Point(3, 614);
             this.pbProgress.Name = "pbProgress";
-            this.pbProgress.Size = new System.Drawing.Size(396, 23);
+            this.pbProgress.Size = new System.Drawing.Size(800, 23);
             this.pbProgress.TabIndex = 10;
             // 
             // lblProgress
             // 
             this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(3, 365);
+            this.lblProgress.Location = new System.Drawing.Point(3, 594);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(56, 17);
             this.lblProgress.TabIndex = 11;
@@ -166,7 +168,7 @@
             // lblProgressText
             // 
             this.lblProgressText.AutoSize = true;
-            this.lblProgressText.Location = new System.Drawing.Point(72, 365);
+            this.lblProgressText.Location = new System.Drawing.Point(57, 594);
             this.lblProgressText.Name = "lblProgressText";
             this.lblProgressText.Size = new System.Drawing.Size(55, 17);
             this.lblProgressText.TabIndex = 12;
@@ -256,7 +258,7 @@
             this.tcTab.Location = new System.Drawing.Point(12, 12);
             this.tcTab.Name = "tcTab";
             this.tcTab.SelectedIndex = 0;
-            this.tcTab.Size = new System.Drawing.Size(455, 504);
+            this.tcTab.Size = new System.Drawing.Size(898, 672);
             this.tcTab.TabIndex = 21;
             // 
             // tabPage1
@@ -275,31 +277,34 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(447, 475);
+            this.tabPage1.Size = new System.Drawing.Size(890, 643);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Abfrage";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.cbRuecktritt);
+            this.tabPage2.Controls.Add(this.cbDistinct);
             this.tabPage2.Controls.Add(this.tabControl1);
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(447, 475);
+            this.tabPage2.Size = new System.Drawing.Size(890, 643);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Notenspiegel";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // lbGrades
+            // cbDistinct
             // 
-            this.lbGrades.FormattingEnabled = true;
-            this.lbGrades.ItemHeight = 16;
-            this.lbGrades.Location = new System.Drawing.Point(3, 6);
-            this.lbGrades.Name = "lbGrades";
-            this.lbGrades.Size = new System.Drawing.Size(428, 388);
-            this.lbGrades.TabIndex = 0;
+            this.cbDistinct.AutoSize = true;
+            this.cbDistinct.Checked = true;
+            this.cbDistinct.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbDistinct.Location = new System.Drawing.Point(6, 6);
+            this.cbDistinct.Name = "cbDistinct";
+            this.cbDistinct.Size = new System.Drawing.Size(126, 21);
+            this.cbDistinct.TabIndex = 2;
+            this.cbDistinct.Text = "Nur beste Note";
+            this.cbDistinct.UseVisualStyleBackColor = true;
             // 
             // tabControl1
             // 
@@ -308,47 +313,58 @@
             this.tabControl1.Location = new System.Drawing.Point(6, 42);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(441, 433);
+            this.tabControl1.Size = new System.Drawing.Size(897, 608);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.lbGrades);
+            this.tabPage3.Controls.Add(this.lvFiltered);
             this.tabPage3.Location = new System.Drawing.Point(4, 25);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(433, 404);
+            this.tabPage3.Size = new System.Drawing.Size(889, 579);
             this.tabPage3.TabIndex = 0;
             this.tabPage3.Text = "Gefiltert";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // lvFiltered
+            // 
+            this.lvFiltered.GridLines = true;
+            this.lvFiltered.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lvFiltered.HideSelection = false;
+            this.lvFiltered.Location = new System.Drawing.Point(10, 4);
+            this.lvFiltered.Name = "lvFiltered";
+            this.lvFiltered.Size = new System.Drawing.Size(868, 570);
+            this.lvFiltered.TabIndex = 1;
+            this.lvFiltered.UseCompatibleStateImageBehavior = false;
+            // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.lvAll);
             this.tabPage4.Location = new System.Drawing.Point(4, 25);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(433, 440);
+            this.tabPage4.Size = new System.Drawing.Size(889, 579);
             this.tabPage4.TabIndex = 1;
             this.tabPage4.Text = "Alle";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // cbRuecktritt
+            // lvAll
             // 
-            this.cbRuecktritt.AutoSize = true;
-            this.cbRuecktritt.Checked = true;
-            this.cbRuecktritt.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbRuecktritt.Location = new System.Drawing.Point(6, 6);
-            this.cbRuecktritt.Name = "cbRuecktritt";
-            this.cbRuecktritt.Size = new System.Drawing.Size(171, 21);
-            this.cbRuecktritt.TabIndex = 2;
-            this.cbRuecktritt.Text = "Rücktritt Ausschließen";
-            this.cbRuecktritt.UseVisualStyleBackColor = true;
+            this.lvAll.GridLines = true;
+            this.lvAll.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lvAll.HideSelection = false;
+            this.lvAll.Location = new System.Drawing.Point(10, 4);
+            this.lvAll.Name = "lvAll";
+            this.lvAll.Size = new System.Drawing.Size(868, 570);
+            this.lvAll.TabIndex = 1;
+            this.lvAll.UseCompatibleStateImageBehavior = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(493, 540);
+            this.ClientSize = new System.Drawing.Size(922, 696);
             this.Controls.Add(this.tcTab);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -365,6 +381,7 @@
             this.tabPage2.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -393,11 +410,12 @@
         private System.Windows.Forms.TabControl tcTab;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.ListBox lbGrades;
-        private System.Windows.Forms.CheckBox cbRuecktritt;
+        private System.Windows.Forms.CheckBox cbDistinct;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.ListView lvFiltered;
+        private System.Windows.Forms.ListView lvAll;
     }
 }
 

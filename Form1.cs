@@ -26,6 +26,22 @@ namespace ICMS_Reader
 
 			tbWebPage.Text = WebPage;
 			pbProgress.Maximum = 10;
+
+			lvFiltered.Columns.Add("Fach", -2);
+			lvFiltered.Columns.Add("Note", -2);
+			lvFiltered.Columns.Add("Credits", -2 );
+			lvFiltered.Columns.Add("Semester", - 2);
+			lvFiltered.Columns.Add("Datum", -2);
+
+			lvFiltered.View = View.Details;
+
+			lvAll.Columns.Add("Fach", -2);
+			lvAll.Columns.Add("Note", -2);
+			lvAll.Columns.Add("Credits", -2);
+			lvAll.Columns.Add("Semester", -2);
+			lvFiltered.Columns.Add("Datum", -2);
+
+			lvAll.View = View.Details;
 		}
 
 		string WebPage = @"https://icms.hs-hannover.de/";
@@ -33,6 +49,9 @@ namespace ICMS_Reader
 
         private void btnGo_Click(object sender, EventArgs e)
         {
+			lvAll.Items.Clear();
+			lvFiltered.Items.Clear();
+
 			IWebDriver driver;
             int loadCount = 0;
 
@@ -222,39 +241,79 @@ namespace ICMS_Reader
 			}
 			loadCount = 0;
 
+			string copyOfNotenListe = notenliste.Text;
+
+			driver.Close();
+			driver.Quit();
+
 			//IWebElement notenliste = driver.FindElement(By.XPath("//table[@style]"));
 
-			NotenListeVerarbeiten(notenliste.Text);
+			NotenListeVerarbeiten(copyOfNotenListe);
 
-			Debug.WriteLine(notenliste.Text);
+			Debug.WriteLine(copyOfNotenListe);
 
 			pbProgress.Value = pbProgress.Maximum;
 			UpdateStatus("Fertig!");
 
-
-			driver.Close();
-			driver.Quit();
+			tabPage2.BringToFront();
+			tabPage4.BringToFront();
 		}
 
         private void NotenListeVerarbeiten(string text)
         {
-			lbGrades.Items.Clear();
-			//lbGrades.MultiColumn = true;
-
+			// Erste Zeile wegwerfen
 			var lines = text.Split('\n').ToList();
 			lines.RemoveAt(0);
 
+			var FachListe = new List<Benotung>();			
             foreach (string line in lines)
             {
-				if (line.Contains("RT") || line.Contains("NGR") || line.Contains("Studienabschnitt"))
+                if (line.Contains("Studienabschnitt") || line.Contains("Bachelor") || line.Contains(" RT ") || line.Contains(" PV "))
                 {
 					continue;
                 }
-				var spllitLine = line.Split(' ');
-				spllitLine[0] = "";
-				lbGrades.Items.Add(spllitLine[1] + spllitLine[2]);
-            }
-			
+
+				string tmpLine = line.Substring(0, line.Length -1);
+				Benotung ben = new Benotung();
+				
+				// Remove first Nnumber
+				tmpLine = tmpLine.Substring(tmpLine.IndexOf(" ") + 1);
+				
+				int commaIndex = tmpLine.IndexOf(',');
+				int endOfFachIndex = commaIndex - 5;
+
+				if (commaIndex != -1)
+                {
+					ben.Note = tmpLine.Substring(commaIndex - 1, 3);
+					ben.Fach = tmpLine.Substring(0, endOfFachIndex);
+
+					ben.Credits = tmpLine.Substring(commaIndex + 6, 1);
+                    if (ben.Credits != "5" && ben.Credits != "")
+                    {
+						ben.Credits = "2,5";
+                    }
+
+					tmpLine = tmpLine.Substring(commaIndex + 8);
+					ben.Semester = tmpLine.Substring(tmpLine.LastIndexOf(" ") - 4);
+				}
+                else
+                {
+					continue;
+                }
+
+				//Distinct!
+				if (cbDistinct.Checked && FachListe.Any(x => x.Fach == ben.Fach))
+				{
+					int i = FachListe.FindIndex(x => x.Fach == ben.Fach);
+					FachListe.RemoveAt(i);
+					lvFiltered.Items.RemoveAt(i);
+					continue;
+				}
+
+				lvFiltered.Items.Add(new ListViewItem(new[] { ben.Fach, ben.Note, ben.Credits, ben.Semester , ben.SaveDate.ToString("dd.MM.yyyy") }));
+				FachListe.Add(ben);
+			}
+
 			//lbGrades.Items.AddRange(Noten);
 		}
 
