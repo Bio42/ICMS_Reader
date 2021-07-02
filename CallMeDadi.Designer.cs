@@ -1,6 +1,6 @@
 ﻿namespace ICMS_Reader
 {
-    partial class Form1
+    partial class CallMeDadi
     {
         /// <summary>
         /// Required designer variable.
@@ -367,7 +367,7 @@
             this.ClientSize = new System.Drawing.Size(922, 696);
             this.Controls.Add(this.tcTab);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Call me Dadi";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
