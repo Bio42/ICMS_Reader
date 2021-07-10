@@ -24,5 +24,20 @@ namespace ICMS_Reader
             Versuche = "";
             SaveDate = DateTime.Now;
         }
+
+        public override string ToString()
+        {
+            return Fach + ";" + Note + ";" + Versuche + ";" + Credits + ";" + Semester + ";" + SaveDate.ToString("dd.MM.yyyy");
+        }
+    }
+
+    enum BenotungPropertyOrder
+    {
+        Fach = 0,
+        Note = 1,
+        Versuche = 2,
+        Credits = 3,
+        Semester = 4,
+        SaveDate = 5
     }
 }

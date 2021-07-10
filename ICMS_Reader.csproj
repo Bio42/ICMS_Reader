@@ -58,8 +58,10 @@
     <Compile Include="CallMeDadi.Designer.cs">
       <DependentUpon>CallMeDadi.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileSystem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserSettings.cs" />
     <Compile Include="WindowControl.cs" />
     <EmbeddedResource Include="CallMeDadi.resx">
       <DependentUpon>CallMeDadi.cs</DependentUpon>

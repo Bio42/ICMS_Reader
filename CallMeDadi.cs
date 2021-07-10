@@ -15,8 +15,11 @@ using System.Windows.Forms;
 
 namespace ICMS_Reader
 {
-	public partial class CallMeDadi : Form
+    public partial class CallMeDadi : Form
     {
+		private const string savePath = "";
+		private List<Benotung> GlobaleNotenliste;
+
 		public CallMeDadi()
         {
             InitializeComponent();
@@ -42,22 +45,64 @@ namespace ICMS_Reader
 			lvFiltered.Columns.Add("Datum", -2);
 
 			lvAll.View = View.Details;
+
+			LoadSavedSettings();
+
+			lvFiltered.Items.AddRange(LoadSavedNoten());
 		}
 
-		string WebPage = @"https://icms.hs-hannover.de/";
+        private ListViewItem[] LoadSavedNoten()
+        {
+			GlobaleNotenliste = FileSystem.LoadNoten(savePath).ToList();
+			return GlobaleNotenliste.Select(ben => new ListViewItem(new[] { ben.Fach, ben.Note, ben.Credits, ben.Semester, ben.SaveDate.ToString("dd.MM.yyyy") })).ToArray();
+		}
+
+		private void LoadSavedSettings()
+        {
+			FileSystem.LoadSettings(savePath);
+			this.tbPassword.Text = FileSystem.Settings.Password;
+			this.tbUsername.Text = FileSystem.Settings.Username;
+			this.rbFirefox.Checked = !FileSystem.Settings.BrowserIsChrome;
+			this.rbChrome.Checked = FileSystem.Settings.BrowserIsChrome;
+			this.rbMEC.Checked = FileSystem.Settings.Study.ToString() == "MEC";
+			this.rbEIT.Checked = FileSystem.Settings.Study.ToString() == "EIT";
+			this.tbWebPage.Text = FileSystem.Settings.Website;
+        }
+
+        string WebPage = @"https://icms.hs-hannover.de/";
         private const int MAX_LOAD_COUNT = 300; //*100ms
 
         private void btnGo_Click(object sender, EventArgs e)
         {
+			string notenListe = GetNotenlisteViaSelenium();			
+
+			//IWebElement notenliste = driver.FindElement(By.XPath("//table[@style]"));
+
+			NotenListeVerarbeiten(notenListe);
+
+			Debug.WriteLine(notenListe);
+
+			pbProgress.Value = pbProgress.Maximum;
+			UpdateStatus("Fertig!");
+
+			tabPage2.BringToFront();
+			tabPage2.Focus();
+			tabPage4.BringToFront();
+			tabPage4.Focus();
+		}
+
+        private string GetNotenlisteViaSelenium()
+        {
+
 			lvAll.Items.Clear();
 			lvFiltered.Items.Clear();
 
 			IWebDriver driver;
-            int loadCount = 0;
+			int loadCount = 0;
 
-            string Studiengang = SelectStudy();            
+			string Studiengang = SelectStudy();
 
-            UpdateStatus("Treiber Laden...");
+			UpdateStatus("Treiber Laden...");
 			pbProgress.Value = 1;
 
 			driver = GetBrowserDriver();
@@ -81,7 +126,7 @@ namespace ICMS_Reader
 			{
 				lblErrorText.Text = "Fehler beim Laden der Webseite";
 				ErrorReset();
-				return;
+				return null;
 			}
 
 			UpdateStatus("Elemente auf der Webseite suchen...");
@@ -109,7 +154,7 @@ namespace ICMS_Reader
 					{
 						throw new TimeoutException("Loading the UserLogin took too long");
 					}
-				}				
+				}
 			}
 			loadCount = 0;
 
@@ -120,11 +165,11 @@ namespace ICMS_Reader
 			string username = tbUsername.Text;
 			string password = tbPassword.Text;
 
-			
+
 
 			userlogin.SendKeys(username);
 			passwordlogin.SendKeys(password);
-			
+
 			loginbutton.Click();
 
 			UpdateStatus("Navigiere zu \"Prüfungen\"...");
@@ -146,12 +191,12 @@ namespace ICMS_Reader
 					{
 						throw new TimeoutException("Loading the Prüfungen took too long");
 					}
-				}				
+				}
 			}
 			loadCount = 0;
 
 			pruefungButton.Click();
-			
+
 			UpdateStatus("Navigiere zu \"Notenspiegel\"...");
 			pbProgress.Value = 6;
 
@@ -174,7 +219,7 @@ namespace ICMS_Reader
 				}
 			}
 			loadCount = 0;
-			
+
 			notenspiegelButton.Click();
 
 			IWebElement abschlussButton = null;
@@ -240,23 +285,11 @@ namespace ICMS_Reader
 				}
 			}
 			loadCount = 0;
-
-			string copyOfNotenListe = notenliste.Text;
-
+			string copyOfNotenliste = notenliste.Text;
 			driver.Close();
 			driver.Quit();
 
-			//IWebElement notenliste = driver.FindElement(By.XPath("//table[@style]"));
-
-			NotenListeVerarbeiten(copyOfNotenListe);
-
-			Debug.WriteLine(copyOfNotenListe);
-
-			pbProgress.Value = pbProgress.Maximum;
-			UpdateStatus("Fertig!");
-
-			tabPage2.BringToFront();
-			tabPage4.BringToFront();
+			return copyOfNotenliste;
 		}
 
         private void NotenListeVerarbeiten(string text)
@@ -264,11 +297,14 @@ namespace ICMS_Reader
 			// Erste Zeile wegwerfen
 			var lines = text.Split('\n').ToList();
 			lines.RemoveAt(0);
-
-			var FachListe = new List<Benotung>();			
+		
             foreach (string line in lines)
             {
-                if (line.Contains("Studienabschnitt") || line.Contains("Bachelor") || line.Contains(" RT ") || line.Contains(" PV "))
+                if (line.Contains("Studienabschnitt")  
+					|| line.Contains("GE") 
+					|| line.Contains("Bachelor") 
+					|| line.Contains(" RT ") 
+					|| line.Contains(" PV "))
                 {
 					continue;
                 }
@@ -301,21 +337,29 @@ namespace ICMS_Reader
 					continue;
                 }
 
-				//Distinct!
-				if (cbDistinct.Checked && FachListe.Any(x => x.Fach == ben.Fach))
+				// TODO DISTINCT!!
+				if(GlobaleNotenliste.Any(note => note.Fach == ben.Fach) && GlobaleNotenliste.Any(note => note.Note == ben.Note))
 				{
-					int i = FachListe.FindIndex(x => x.Fach == ben.Fach);
-					FachListe.RemoveAt(i);
-					lvFiltered.Items.RemoveAt(i);
+					int i = GlobaleNotenliste.FindIndex(x => x.Fach == ben.Fach);
+					GlobaleNotenliste.RemoveAt(i);
 					continue;
 				}
-
-				lvFiltered.Items.Add(new ListViewItem(new[] { ben.Fach, ben.Note, ben.Credits, ben.Semester , ben.SaveDate.ToString("dd.MM.yyyy") }));
-				FachListe.Add(ben);
+                
+				
+				//lvFiltered.Items.Add(new ListViewItem(new[] { ben.Fach, ben.Note, ben.Credits, ben.Semester , ben.SaveDate.ToString("dd.MM.yyyy") }));
+				GlobaleNotenliste.Add(ben);
 			}
+			GlobaleNotenliste.OrderByDescending(x=>x.Semester);
+			lvFiltered.Items.AddRange(FachListe.Select(ben => new ListViewItem(new[] { ben.Fach, ben.Note, ben.Credits, ben.Semester, ben.SaveDate.ToString("dd.MM.yyyy") })).ToArray());
 
+			UpdateSave(FachListe);
 			//lbGrades.Items.AddRange(Noten);
 		}
+
+        private void UpdateSave(List<Benotung> fachListe)
+        {
+			FileSystem.SaveNoten(fachListe, savePath);
+        }
 
         private IWebDriver GetBrowserDriver()
         {
@@ -374,5 +418,56 @@ namespace ICMS_Reader
         {
 
         }
-    }
+
+        private void CallMeDadi_Load(object sender, EventArgs e)
+        {
+
+        }
+
+		protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+			Studys currentStudy;
+			if (rbMEC.Checked)
+			{
+				currentStudy = Studys.MEC;
+			}
+			else
+			{
+				currentStudy = Studys.EIT;
+			}
+
+			UserSettings newSettings = new UserSettings(tbUsername.Text, 
+				tbPassword.Text, 
+				currentStudy, 
+				rbChrome.Checked, 
+				tbWebPage.Text);
+
+			if (FileSystem.SettingsChanged(newSettings, savePath))
+            {
+				DialogResult result = MessageBox.Show("Einstellungen Speichern?",
+			"Speichern", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+
+                switch (result)
+                {
+                    case DialogResult.Cancel:
+                        return;
+                    case DialogResult.Yes:						
+						FileSystem.SaveSettings(newSettings, savePath);
+                        break;
+                    case DialogResult.No:
+                        break;
+                    default:
+						return;
+                }
+
+            }
+			
+			base.OnFormClosed(e);
+		}
+
+        public enum Studys
+        {
+			MEC, EIT
+        }
+	}
 }
